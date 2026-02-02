@@ -7,15 +7,19 @@
     "@types/bun": "latest",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/pg": "^8.16.0",
     "prettier": "^3.8.1"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@better-auth/passkey": "^1.4.18",
     "@types/morgan": "^1.9.10",
+    "better-auth": "^1.4.18",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "pg": "^8.18.0"
   }
 }
