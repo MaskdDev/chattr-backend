@@ -585,8 +585,8 @@ components:
           type: integer
           format: int32
         expiry:
-          type: integer
-          format: int64
+          type: string
+          format: date-time
       required:
         - id
         - code
@@ -595,6 +595,46 @@ components:
         - uses
         - max_uses
         - expiry
+
+    MessageCreate:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
+      example:
+        content: "Woah it's a message on Chatrooms! That's crazy"
+
+    MessagePatch:
+      type: object
+      properties:
+        content:
+          type: string
+      example:
+        content: "Woah it's a message on Chatrooms!"
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        author:
+          $ref: "#/components/schemas/User"
+        content:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        editedTimestamp:
+          type: [ string, "null" ]
+          format: date-time
+      required:
+        - id
+        - author
+        - content
+        - timestamp
+        - editedTimestamp
     
     Error:
       type: object
