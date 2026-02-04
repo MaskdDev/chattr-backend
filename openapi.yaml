@@ -1,0 +1,270 @@
+openapi: 3.1.0
+info:
+  title: Chatrooms API
+  description: The API for Chatrooms.
+  version: 1.0.0
+servers:
+  - url: 'https://api.chatrooms.udupa.dev'
+paths:
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Fetch a user using their ID.
+      description: Fetch a Chatrooms user's profile using their ID.
+      parameters:
+        - name: userId
+          in: path
+          description: The user's ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /rooms:
+    get:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Rooms
+      summary: Get a summary of all rooms.
+      description: Get a summary of all rooms available to the currently logged in user.
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rooms:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Room"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Rooms
+      summary: Create a new room.
+      description: Create a new room as the currently logged in user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoomCreate"
+      responses:
+        "201":
+          description: Successfully created room.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /rooms/{roomId}:
+    get:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Rooms
+      summary: Get information on a specific room.
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Rooms
+      summary: Update an existing room.
+      description: Update an existing room as the currently logged in user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoomPatch"
+      responses:
+        "200":
+          description: Successfully created room.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Rooms
+      summary: Delete a room.
+      description: Delete the room with the specified ID.
+      responses:
+        "201":
+          description: Successfully deleted room.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: betterauth.session_token
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: [ string, "null" ]
+      required:
+        - id
+        - username
+        - displayName
+        - avatarUrl
+      example:
+        - id: "12345676543245"
+          username: horizell
+          displayName: Horizell
+
+    RoomCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: [ string, "null" ]
+      required:
+        - name
+      example:
+        name: General
+        description: A general place for conversation or smth :)
+
+    RoomPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: [ string, "null" ]
+      example:
+        description: A general place for conversation or smth :)
+    
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: [ string, "null" ]
+      required:
+        - id
+        - name
+        - description
+      example:
+        id: "12384829543245"
+        name: General
+        description: A general place for conversation or smth :)
+    
+    
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      example:
+        - code: 404
+          message: User not found.
+
+tags:
+  - name: Users
+    description: Routes relating to Chatrooms users.
+  - name: Rooms
+    description: Routes relating to Chatrooms rooms.
