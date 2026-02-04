@@ -347,7 +347,48 @@ components:
         id: "12384829543245"
         name: General
         description: A general place for conversation or smth :)
-    
+
+    CreateInvite:
+      type: object
+      properties:
+        max_uses:
+          type: integer
+          format: int32
+        expiry:
+          type: integer
+          format: int64
+      required:
+        - max_uses
+        - expiry
+
+    Invite:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        room:
+          $ref: "#/components/schemas/Room"
+        creator:
+          $ref: "#/components/schemas/User"
+        uses:
+          type: integer
+          format: int32
+        max_uses:
+          type: integer
+          format: int32
+        expiry:
+          type: integer
+          format: int64
+      required:
+        - id
+        - code
+        - room
+        - creator
+        - uses
+        - max_uses
+        - expiry
     
     Error:
       type: object
