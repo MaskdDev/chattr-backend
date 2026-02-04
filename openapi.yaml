@@ -74,7 +74,7 @@ paths:
             schema:
               $ref: "#/components/schemas/RoomCreate"
       responses:
-        "200":
+        "201":
           description: Successfully created room.
           content:
             application/json:
@@ -148,12 +148,8 @@ paths:
             schema:
               $ref: "#/components/schemas/RoomPatch"
       responses:
-        "200":
-          description: Successfully created room.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Room"
+        "204":
+          description: Successfully updated room.
         "401":
           description: Not Authorised.
           content:
@@ -187,7 +183,7 @@ paths:
           schema:
             type: string
       responses:
-        "201":
+        "204":
           description: Successfully deleted room.
         "401":
           description: Not Authorised.
@@ -269,7 +265,7 @@ paths:
           schema:
             type: string
       responses:
-        "201":
+        "204":
           description: Successfully removed member.
         "401":
           description: Not Authorised.
@@ -349,7 +345,7 @@ paths:
             schema:
               $ref: "#/components/schemas/InviteCreate"
       responses:
-        "200":
+        "201":
           description: Successfully created room invite.
           content:
             application/json:
@@ -375,6 +371,111 @@ paths:
                 $ref: "#/components/schemas/Error"
         "422":
           description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /invites/{inviteCode}:
+    get:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Room Invites
+      summary: Get information for a specified invite.
+      parameters:
+        - name: inviteCode
+          in: path
+          description: The code of the invite to get the information for.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Invite with given code not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Room Invites
+      summary: Accept an invite with a given code.
+      description: Accept an invite with a given code as the currently logged in user.
+      parameters:
+        - name: inviteCode
+          in: path
+          description: The code of the invite to accept.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteCreate"
+      responses:
+        "204":
+          description: Successfully accepted invite.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Invite with given code not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Room Invites
+      summary: Delete an invite.
+      description: Delete a room invite with the specified code.
+      parameters:
+        - name: inviteCode
+          in: path
+          description: The code of the invite to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted invite.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to delete this invite.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Invite with given code not found.
           content:
             application/json:
               schema:
