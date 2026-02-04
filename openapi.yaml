@@ -481,6 +481,117 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /rooms/{roomId}/messages:
+    get:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Messages
+      summary: Get the messages in a given room.
+      description: Get the messages in a given room, from newest to oldest.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to get messages from. Defaults to last 25 messages.
+          required: true
+          schema:
+            type: string
+        - name: before
+          in: query
+          description: Get messages before this ID.
+          required: false
+          schema:
+            type: string
+        - name: after
+          in: query
+          description: Get messages after this ID.
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: The maximum number of messages to return (1-100).
+          required: false
+          schema:
+            type: integer
+            format: i32
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Message"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to view messages in this channel.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Messages
+      summary: Send a new message in a room.
+      description: Send a new message in a given room, as the currently logged in user.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to send a message in.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageCreate"
+      responses:
+        "200":
+          description: Successfully sent message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to send messages in this channel.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   securitySchemes:
     cookieAuth:
