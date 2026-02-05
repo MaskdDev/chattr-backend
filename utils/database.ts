@@ -13,7 +13,7 @@ export async function getUser(userId: string): Promise<UserProfile | null> {
   // Create query
   const query = `
     SELECT "id", "username", "displayUsername" AS "displayName", "image" AS "avatarUrl" 
-    FROM "user" 
+    FROM "users" 
     WHERE id = $1
   `;
   const values = [userId];
