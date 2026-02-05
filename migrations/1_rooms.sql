@@ -5,7 +5,7 @@ create table if not exists "rooms"
 
     -- Room information
     name        text        not null,
-    description text,
+    description text                 default null,
     visibility  boolean     not null default false,
 
     -- Record keeping
