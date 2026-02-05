@@ -19,7 +19,7 @@ create table if not exists "room_invites"
         references "rooms" (room_id)
         on delete cascade,
     constraint fkey_room_invites_creator_id foreign key (creator_id)
-        references "user" (id)
+        references "users" (id)
         on delete cascade
 );
 

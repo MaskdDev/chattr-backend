@@ -13,7 +13,7 @@ create table if not exists "room_members"
 
     -- Foreign keys
     constraint fkey_room_members_member_id foreign key (member_id)
-        references "user" (id)
+        references "users" (id)
         on delete cascade,
     constraint fkey_room_members_room_id foreign key (room_id)
         references "rooms" (room_id)
