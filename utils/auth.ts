@@ -32,15 +32,6 @@ export const auth = betterAuth({
     }),
     passkey(),
   ],
-  user: {
-    additionalFields: {
-      avatarUrl: {
-        type: "string",
-        required: false,
-        defaultValue: null,
-      },
-    },
-  },
   advanced: {
     database: {
       generateId: () => generator.generate().toString(),

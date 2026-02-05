@@ -6,6 +6,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./utils/auth.ts";
 import apiSpec from "./openapi.yaml";
 import swaggerUi from "swagger-ui-express";
+import userRouter from "./routes/users.ts";
 
 // Create Express application and HTTP server
 const app = express();
@@ -23,6 +24,9 @@ app.use(express.json());
 
 // Expose Swagger UI
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
+
+// Add routers
+app.use("/users", userRouter);
 
 // Start server
 const port = process.env.PORT || 3000;

@@ -15,7 +15,7 @@ class SnowflakeGenerator {
   /**
    * Increment the sequence number for this generator, returning the previous sequence number.
    */
-  increment_seq(): number {
+  incrementSeq(): number {
     // Store current sequence number.
     const current = this.current_seq;
 
@@ -34,7 +34,7 @@ class SnowflakeGenerator {
    */
   generate(): bigint {
     // Get sequence number
-    const seq_number = BigInt(this.increment_seq());
+    const seq_number = BigInt(this.incrementSeq());
 
     // Get UNIX timestamp, in milliseconds.
     const timestamp = BigInt(new Date().valueOf());
@@ -54,7 +54,7 @@ class SnowflakeGenerator {
  * Deconstruct a snowflake into its components.
  * @param snowflake The snowflake to deconstruct.
  */
-function deconstruct_snowflake(snowflake: bigint) {
+function deconstructSnowflake(snowflake: bigint) {
   // Break down pieces of ID
   const timestamp = (snowflake & 0x7fffffffffe00000n) >> 21n;
   const worker_id = (snowflake & 0x1ff000n) >> 12n;
@@ -64,7 +64,7 @@ function deconstruct_snowflake(snowflake: bigint) {
   const creation_date = new Date(Number(timestamp));
 
   // Return deconstructed snowflake
-  return { timestamp, worker_id, sequence_number };
+  return { creation_date, worker_id, sequence_number };
 }
 
 // Initialise a snowflake generator for the application.

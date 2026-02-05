@@ -899,12 +899,13 @@ components:
       type: object
       properties:
         code:
-          type: string
+          type: integer
+          format: i32
         message:
           type: string
       example:
-        - code: 404
-          message: User not found.
+        code: 404
+        message: User not found.
 
 tags:
   - name: Users
