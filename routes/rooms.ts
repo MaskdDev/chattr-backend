@@ -1,7 +1,13 @@
 import { Router } from "express";
 import { requireAuth } from "../utils/middleware.ts";
-import { createRoom, getRoom, getUserRooms } from "../queries/rooms.ts";
-import type { RoomCreate } from "../utils/types.ts";
+import {
+  createRoom,
+  deleteRoom,
+  getRoom,
+  getUserRooms,
+  updateRoom,
+} from "../queries/rooms.ts";
+import type { RoomCreate, RoomPatch } from "../utils/types.ts";
 
 // Create router for route group
 const router = Router();
@@ -90,5 +96,87 @@ router.get("/:roomId", async (req, res) => {
   }
 });
 
+/**
+ * Update an existing room.
+ */
+router.patch("/:roomId", async (req, res) => {
+  // Get user from request
+  const user = req.authUser;
+
+  // Check if user is authenticated
+  if (user) {
+    // Get room ID
+    const roomId = BigInt(req.params.roomId);
+
+    // Get room
+    const room = await getRoom(roomId);
+
+    // Check if room exists
+    if (!room) {
+      return res
+        .status(404)
+        .json({ code: 404, message: "Room with given ID not found." });
+    }
+
+    // Check if room belongs to user
+    if (room.creator?.id !== user.id) {
+      return res.status(403).json({
+        code: 403,
+        message: "User does not have the permission to edit this room.",
+      });
+    }
+
+    // Get body
+    const body: RoomPatch = req.body;
+
+    // Edit room
+    await updateRoom(roomId, body.name, body.description);
+
+    // Return success
+    res.status(204);
+  } else {
+    res.sendStatus(401);
+  }
+});
+
+/**
+ * Delete an existing room.
+ */
+router.patch("/:roomId", async (req, res) => {
+  // Get user from request
+  const user = req.authUser;
+
+  // Check if user is authenticated
+  if (user) {
+    // Get room ID
+    const roomId = BigInt(req.params.roomId);
+
+    // Get room
+    const room = await getRoom(roomId);
+
+    // Check if room exists
+    if (!room) {
+      return res
+        .status(404)
+        .json({ code: 404, message: "Room with given ID not found." });
+    }
+
+    // Check if room belongs to user
+    if (room.creator?.id !== user.id) {
+      return res.status(403).json({
+        code: 403,
+        message: "User does not have the permission to delete this room.",
+      });
+    }
+
+    // Delete room
+    await deleteRoom(roomId);
+
+    // Return success
+    res.status(204);
+  } else {
+    res.sendStatus(401);
+  }
+});
 // Export router as default export.
 export default router;

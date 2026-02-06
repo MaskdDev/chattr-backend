@@ -37,3 +37,11 @@ export type RoomCreate = {
   name: string;
   description?: string | null;
 };
+
+/**
+ * A type representing the body of a patch room request.
+ */
+export type RoomPatch = {
+  name?: string;
+  description?: string | null;
+};
