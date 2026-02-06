@@ -8,6 +8,8 @@ import {
   updateRoom,
 } from "../queries/rooms.ts";
 import type { RoomCreate, RoomPatch } from "../utils/types.ts";
+import { getMembers } from "../queries/members.ts";
+import { roomNotFound } from "../utils/responses.ts";
 
 // Create router for route group
 const router = Router();
@@ -113,9 +115,7 @@ router.patch("/:roomId", async (req, res) => {
 
     // Check if room exists
     if (!room) {
-      return res
-        .status(404)
-        .json({ code: 404, message: "Room with given ID not found." });
+      return roomNotFound(res);
     }
 
     // Check if room belongs to user
@@ -128,6 +128,21 @@ router.patch("/:roomId", async (req, res) => {
 
     // Get body
     const body: RoomPatch = req.body;
+
+    // Check for length issues
+    if (body.name && (body.name.length > 20 || body.name.length < 3)) {
+      return res.status(422).json({
+        code: 422,
+        message: "Room name must be between 3 and 20 characters.",
+      });
+    }
+
+    if (body.description && body.description.length > 150) {
+      return res.status(422).json({
+        code: 422,
+        message: "Room description cannot exceed 150 characters.",
+      });
+    }
 
     // Edit room
     await updateRoom(roomId, body.name, body.description);
@@ -156,9 +171,7 @@ router.delete("/:roomId", async (req, res) => {
 
     // Check if room exists
     if (!room) {
-      return res
-        .status(404)
-        .json({ code: 404, message: "Room with given ID not found." });
+      return roomNotFound(res);
     }
 
     // Check if room belongs to user
@@ -178,5 +191,25 @@ router.delete("/:roomId", async (req, res) => {
     res.sendStatus(401);
   }
 });
+
+/**
+ * Get the members of a specific room.
+ */
+router.get("/:roomId/members", async (req, res) => {
+  // Get room ID
+  const roomId = BigInt(req.params.roomId);
+
+  // Get room members
+  const members = await getMembers(roomId);
+
+  // Check if room exists
+  if (!members) {
+    return roomNotFound(res);
+  }
+
+  // Return room members
+  res.status(200).json({ members });
+});
+
 // Export router as default export.
 export default router;
