@@ -12,6 +12,7 @@ import {
   getMessages,
 } from "../queries/messages.ts";
 import type { MessageCreate, MessagePatch } from "../utils/types.ts";
+import { broadcastToSubscribers } from "../utils/sockets.ts";
 
 // Create router for route group
 const router = Router({ mergeParams: true });
@@ -115,6 +116,12 @@ router.post("/", async (req: MergedRequest, res) => {
 
     // Send message
     const message = await createMessage(roomId, user.id, body.content);
+
+    // Send message to all subscribers
+    setTimeout(
+      () => broadcastToSubscribers(roomId, "Hello, waw message TODO"),
+      0,
+    );
 
     // Return message
     res.status(200).json(message);

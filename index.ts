@@ -9,9 +9,14 @@ import swaggerUi from "swagger-ui-express";
 import userRouter from "./routes/users.ts";
 import roomRouter from "./routes/rooms.ts";
 import inviteRouter from "./routes/invites.ts";
+import {
+  createWebSocketServer,
+  serverUpgradeCallback,
+} from "./utils/sockets.ts";
 
-// Create Express application and HTTP server
+// Create Express application, WebSocket server and HTTP server
 const app = express();
+const wss = createWebSocketServer();
 const server = createServer(app);
 
 // Use CORS and logging middleware
@@ -31,6 +36,9 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
 app.use("/users", userRouter);
 app.use("/rooms", roomRouter);
 app.use("/invites", inviteRouter);
+
+// Set server upgrade handler
+server.on("upgrade", serverUpgradeCallback(wss));
 
 // Start server
 const port = process.env.PORT || 3000;
