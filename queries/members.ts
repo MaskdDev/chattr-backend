@@ -5,15 +5,11 @@ import { database } from "../utils/database.ts";
 /**
  * Get the members in a specific room.
  *
- * Returns null if the room doesn't exist.
+ * Assumes the room exists, and returns an empty array even if it doesn't.
  */
-export async function getMembers(
-  roomId: bigint,
-): Promise<UserProfile[] | null> {
-  // Check if room exists
-  if (await roomExists(roomId)) {
-    // Create query
-    const query = `
+export async function getMembers(roomId: bigint): Promise<UserProfile[]> {
+  // Create query
+  const query = `
     select
         "users"."id" as "id", "users"."username", "users"."displayUsername" as "displayName", "users"."image" as "avatarUrl"
     from "room_members"
@@ -21,20 +17,13 @@ export async function getMembers(
         on "users".id = "room_members".member_id
     where "room_members".room_id = $1
   `;
-    const values = [roomId];
+  const values = [roomId];
 
-    // Run query
-    const results = await database.query(query, values);
+  // Run query
+  const results = await database.query(query, values);
 
-    // Check if user was found
-    if (results.rows) {
-      return results.rows as UserProfile[];
-    } else {
-      return null;
-    }
-  } else {
-    return null;
-  }
+  // Return results
+  return results.rows as UserProfile[];
 }
 
 /**

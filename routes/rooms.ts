@@ -5,6 +5,7 @@ import {
   deleteRoom,
   getRoom,
   getUserRooms,
+  roomExists,
   updateRoom,
 } from "../queries/rooms.ts";
 import type { RoomCreate, RoomPatch } from "../utils/types.ts";
@@ -191,13 +192,13 @@ router.get("/:roomId/members", async (req, res) => {
   // Get room ID
   const roomId = BigInt(req.params.roomId);
 
-  // Get room members
-  const members = await getMembers(roomId);
-
   // Check if room exists
-  if (!members) {
+  if (!(await roomExists(roomId))) {
     return roomNotFound(res);
   }
+
+  // Get room members
+  const members = await getMembers(roomId);
 
   // Return room members
   res.status(200).json({ members });
