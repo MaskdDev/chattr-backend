@@ -68,13 +68,13 @@ export async function getRoom(roomId: bigint): Promise<Room | null> {
 /**
  * Create a new room as a specified user, with a specified name and optional description.
  *
- * Returns null on a fail.
+ * Throws an error on a fail.
  */
 export async function createRoom(
   userId: string,
   name: string,
   description: string | null,
-): Promise<Room | null> {
+): Promise<Room> {
   // Generate room ID
   const roomId = generator.generate();
 
@@ -105,6 +105,46 @@ export async function createRoom(
       description: roomRow.description,
     };
   } else {
-    return null;
+    throw new Error("Could not create room.");
   }
+}
+
+/**
+ * Update an existing room. Returns whether an update was performed.
+ *
+ * Throws an error on a fail.
+ */
+export async function updateRoom(
+  roomId: bigint,
+  name: string | undefined,
+  description: string | null | undefined,
+): Promise<boolean> {
+  // Get fields to update
+  const fields = [];
+  const values = [];
+  let placeholderCount = 1;
+
+  if (name !== undefined) {
+    fields.push(`"name" = $${placeholderCount++}`);
+    values.push(name);
+  }
+
+  if (description !== undefined) {
+    fields.push(`"description" = $${placeholderCount++}`);
+  }
+
+  // Add room ID to values
+  values.push(roomId);
+
+  // Create query
+  const query = `
+    update "rooms"
+    set ${fields.join(", ")}
+    where "rooms".room_id = $${placeholderCount}`;
+
+  // Run query
+  const results = await database.query(query, values);
+
+  // Check if anything was updated
+  return !!results.rowCount;
 }
