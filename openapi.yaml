@@ -595,6 +595,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid message content provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /rooms/{roomId}/messages/{messageId}:
     get:
