@@ -64,8 +64,8 @@ export type Invite = {
   room: PartialRoom;
   creator: UserProfile | null;
   uses: number;
-  maxUses: number;
-  expires: Date;
+  maxUses: number | null;
+  expires: Date | null;
 };
 
 /**
@@ -76,8 +76,8 @@ export type PartialInvite = {
   roomId: string;
   creatorId: string | null;
   uses: number;
-  maxUses: number;
-  expires: Date;
+  maxUses: number | null;
+  expires: Date | null;
 };
 
 /**
@@ -88,16 +88,16 @@ export type InviteRow = {
   room_id: string;
   creator_id: string;
   uses: number;
-  max_uses: number;
-  expires: Date;
+  max_uses: number | null;
+  expires: Date | null;
 };
 
 /**
  * A type representing the body of a create invite request.
  */
 export type InviteCreate = {
-  maxUses: number;
-  expires: Date;
+  maxUses: number | null;
+  expires: Date | null;
 };
 
 /**

@@ -27,6 +27,33 @@ export async function getMembers(roomId: bigint): Promise<UserProfile[]> {
 }
 
 /**
+ * Return whether a user is a member of a group.
+ */
+export async function isMember(
+  userId: string,
+  roomId: bigint,
+): Promise<boolean> {
+  // Create query
+  const query = `
+    select exists (
+      select 1
+      from "room_members"
+      where "member_id" = $1 and "room_id" = $2
+    ) as result
+  `;
+
+  // Run query
+  const results = await database.query(query, [userId, roomId]);
+
+  // Return result
+  if (results.rows.length === 1) {
+    return results.rows[0].result;
+  } else {
+    return false;
+  }
+}
+
+/**
  * Add a member with a given ID to a room. Returns whether user was added.
  *
  * Returns null if the room doesn't exist.

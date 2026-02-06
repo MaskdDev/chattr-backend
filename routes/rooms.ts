@@ -8,10 +8,10 @@ import {
   roomExists,
   updateRoom,
 } from "../queries/rooms.ts";
-import type { RoomCreate, RoomPatch } from "../utils/types.ts";
-import { getMembers, removeMember } from "../queries/members.ts";
+import type { InviteCreate, RoomCreate, RoomPatch } from "../utils/types.ts";
+import { getMembers, isMember, removeMember } from "../queries/members.ts";
 import { roomNotFound } from "../utils/responses.ts";
-import { getRoomInvites } from "../queries/invites.ts";
+import { createInvite, getRoomInvites } from "../queries/invites.ts";
 
 // Create router for route group
 const router = Router();
@@ -282,6 +282,51 @@ router.get("/:roomId/invites", async (req, res) => {
 
     // Return invites
     res.status(200).json({ invites });
+  }
+});
+
+/**
+ * Create a new invite for a room.
+ */
+router.post("/:roomId/invites", async (req, res) => {
+  // Get user from request
+  const user = req.authUser;
+
+  // Check if user is authenticated
+  if (user) {
+    // Get room ID
+    const roomId = BigInt(req.params.roomId);
+
+    // Get room
+    const room = await getRoom(roomId);
+
+    // Check if room exists
+    if (!room) {
+      return roomNotFound(res);
+    }
+
+    // Check if user can create room invites
+    if (!(room.creator?.id === user.id || (await isMember(user.id, roomId)))) {
+      return res.status(403).json({
+        code: 403,
+        message:
+          "User does not have the permission to create an invite for this room.",
+      });
+    }
+
+    // Get request body
+    const body = req.body as InviteCreate;
+
+    // Create invite
+    const invite = await createInvite(
+      user.id,
+      roomId,
+      body.maxUses,
+      body.expires,
+    );
+
+    // Return partial invite
+    res.status(201).json(invite);
   }
 });
 

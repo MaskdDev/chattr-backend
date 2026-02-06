@@ -362,7 +362,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Invite"
+                $ref: "#/components/schemas/PartialInvite"
         "401":
           description: Not Authorised.
           content:
@@ -852,10 +852,10 @@ components:
       type: object
       properties:
         maxUses:
-          type: integer
+          type: [ integer, "null" ]
           format: int32
         expires:
-          type: string
+          type: [ string, "null" ]
           format: date-time
       required:
         - maxUses
@@ -877,10 +877,10 @@ components:
           type: integer
           format: int32
         maxUses:
-          type: integer
+          type: [ integer, "null" ]
           format: int32
         expires:
-          type: string
+          type: [ string, "null" ]
           format: date-time
       required:
         - id
@@ -904,10 +904,10 @@ components:
           type: integer
           format: int32
         maxUses:
-          type: integer
+          type: [ integer, "null" ]
           format: int32
         expires:
-          type: string
+          type: [ string, "null" ]
           format: date-time
       required:
         - id
