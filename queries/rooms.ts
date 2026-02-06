@@ -111,8 +111,6 @@ export async function createRoom(
 
 /**
  * Update an existing room. Returns whether an update was performed.
- *
- * Throws an error on a fail.
  */
 export async function updateRoom(
   roomId: bigint,
@@ -145,6 +143,22 @@ export async function updateRoom(
   // Run query
   const results = await database.query(query, values);
 
-  // Check if anything was updated
+  // Return if anything was updated
+  return !!results.rowCount;
+}
+
+/**
+ * Update an existing room. Returns whether a deletion was performed.
+ */
+export async function deleteRoom(roomId: bigint): Promise<boolean> {
+  // Create query
+  const query = `
+    delete from "rooms"
+    where "rooms".room_id = $1`;
+
+  // Run query
+  const results = await database.query(query, [roomId]);
+
+  // Return if anything was deleted
   return !!results.rowCount;
 }
