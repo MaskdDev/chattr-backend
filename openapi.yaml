@@ -753,12 +753,6 @@ components:
         username: horizell
         displayName: Horizell
 
-    RoomVisibility:
-      type: string
-      enum:
-        - public
-        - private
-
     RoomCreate:
       type: object
       properties:
@@ -766,11 +760,8 @@ components:
           type: string
         description:
           type: [ string, "null" ]
-        visibility:
-          $ref: "#/components/schemas/RoomVisibility"
       required:
         - name
-        - visibility
       example:
         name: General
         description: A general place for conversation or smth :)
@@ -782,11 +773,8 @@ components:
           type: string
         description:
           type: [ string, "null" ]
-        visibility:
-          $ref: "#/components/schemas/RoomVisibility"
       example:
         description: A general place for conversation or smth :)
-        visibility: private
     
     Room:
       type: object
@@ -797,18 +785,14 @@ components:
           type: string
         description:
           type: [ string, "null" ]
-        visibility:
-          $ref: "#/components/schemas/RoomVisibility"
       required:
         - id
         - name
         - description
-        - visibility
       example:
         id: "12384829543245"
         name: General
         description: A general place for conversation or smth :)
-        visibility: public
 
     InviteCreate:
       type: object
