@@ -8,7 +8,7 @@ import {
   updateRoom,
 } from "../queries/rooms.ts";
 import type { RoomCreate, RoomPatch } from "../utils/types.ts";
-import { getMembers } from "../queries/members.ts";
+import { getMembers, removeMember } from "../queries/members.ts";
 import { roomNotFound } from "../utils/responses.ts";
 
 // Create router for route group
@@ -31,8 +31,6 @@ router.get("/", async (req, res) => {
 
     // Return success
     res.status(200).json({ rooms });
-  } else {
-    res.sendStatus(401);
   }
 });
 
@@ -73,8 +71,6 @@ router.post("/", async (req, res) => {
 
     // Return success
     res.status(201).json(room);
-  } else {
-    res.sendStatus(401);
   }
 });
 
@@ -149,8 +145,6 @@ router.patch("/:roomId", async (req, res) => {
 
     // Return success
     res.status(204);
-  } else {
-    res.sendStatus(401);
   }
 });
 
@@ -187,8 +181,6 @@ router.delete("/:roomId", async (req, res) => {
 
     // Return success
     res.status(204);
-  } else {
-    res.sendStatus(401);
   }
 });
 
@@ -209,6 +201,49 @@ router.get("/:roomId/members", async (req, res) => {
 
   // Return room members
   res.status(200).json({ members });
+});
+
+/**
+ * Remove a members from a specific room.
+ */
+router.delete("/:roomId/members/:memberId", async (req, res) => {
+  // Get user from request
+  const user = req.authUser;
+
+  // Check if user is authenticated
+  if (user) {
+    // Get room ID and member ID
+    const roomId = BigInt(req.params.roomId);
+    const memberId = req.params.memberId;
+
+    // Get room
+    const room = await getRoom(roomId);
+
+    // Check if room exists
+    if (!room) {
+      return roomNotFound(res);
+    }
+
+    // Check if user can remove member from room
+    if (!(memberId === user.id || room.creator?.id === user.id)) {
+      return res.status(403).json({
+        code: 403,
+        message: "User does not have the permission to remove this member.",
+      });
+    }
+
+    // Remove member
+    const result = await removeMember(memberId, roomId);
+
+    // Check if member was removed
+    if (result) {
+      res.status(204);
+    } else {
+      res
+        .status(404)
+        .json({ code: 404, message: "Member with given ID not found." });
+    }
+  }
 });
 
 // Export router as default export.

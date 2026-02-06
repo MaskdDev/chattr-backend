@@ -17,9 +17,7 @@ export async function requireAuth(
 
   // Check if the session has an authenticated user
   if (!session?.user) {
-    return res
-      .status(401)
-      .json({ code: 401, message: "Authentication required." });
+    return res.sendStatus(401);
   }
 
   // Add session and user to request for use by handlers
