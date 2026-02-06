@@ -123,7 +123,9 @@ export async function createRoom(
 }
 
 /**
- * Update an existing room. Returns whether an update was performed.
+ * Update an existing room.
+ *
+ * Returns whether an update was performed.
  */
 export async function updateRoom(
   roomId: bigint,
@@ -161,7 +163,9 @@ export async function updateRoom(
 }
 
 /**
- * Update an existing room. Returns whether a deletion was performed.
+ * Update an existing room.
+ *
+ * Returns whether a deletion was performed.
  */
 export async function deleteRoom(roomId: bigint): Promise<boolean> {
   // Create query

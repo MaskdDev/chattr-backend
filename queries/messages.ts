@@ -99,7 +99,7 @@ export async function createMessage(
   authorId: string,
   content: string,
 ): Promise<Message> {
-  // Generate room ID
+  // Generate message ID
   const messageId = generator.generate();
 
   // Create query
@@ -133,6 +133,48 @@ export async function createMessage(
       editedTimestamp: messageRow.edit_timestamp,
     };
   } else {
-    throw new Error("Could not create room.");
+    throw new Error("Could not create message.");
   }
+}
+
+/**
+ * Edit the content of a message with a given ID.
+ *
+ * Return whether an edit was performed.
+ */
+export async function editMessage(
+  messageId: bigint,
+  newContent: string,
+): Promise<boolean> {
+  // Create query
+  const query = `
+    update "messages"
+    set "content" = $1
+    where "message_id" = $2`;
+  const values = [newContent, messageId];
+
+  // Run query
+  const results = await database.query(query, values);
+
+  // Return if anything was edited
+  return !!results.rowCount;
+}
+
+/**
+ * Delete a message with a given ID.
+ *
+ * Returns whether a deletion was performed.
+ */
+export async function deleteMessage(messageId: bigint): Promise<boolean> {
+  // Create query
+  const query = `
+    delete from "messages"
+    where "message_id" = $1`;
+  const values = [messageId];
+
+  // Run query
+  const results = await database.query(query, values);
+
+  // Return if anything was deleted
+  return !!results.rowCount;
 }
