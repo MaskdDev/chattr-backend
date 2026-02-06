@@ -54,3 +54,35 @@ export async function getMessages(
   // Return messages
   return results.rows as Message[];
 }
+
+/**
+ * Get a message with a specified ID.
+ *
+ * Returns null if message doesn't exist.
+ */
+export async function getMessage(messageId: bigint): Promise<Message | null> {
+  // Create query
+  const query = `
+    select "message_id" as "id", "content", "timestamp", "edit_timestamp" as "editedTimestamp",
+        jsonb_build_object(
+        'id', "users".id,
+        'username', "users"."username",
+        'displayName', "users"."displayUsername",
+        'avatarUrl', "users"."image"
+        ) filter ( where "users".id is not null ) as "author"
+    from "messages"
+    left join "users"
+        on "users"."id" = "messages"."author_id"
+    where "message_id" = $1
+    `;
+
+  // Run query
+  const results = await database.query(query, [messageId]);
+
+  // Check if message exists
+  if (results.rows.length === 1) {
+    return results.rows[0] as Message;
+  } else {
+    return null;
+  }
+}
