@@ -77,7 +77,7 @@ router.post("/:inviteCode", async (req, res) => {
 
     // Check if user was added to room
     if (result) {
-      res.status(204);
+      res.sendStatus(204);
     } else {
       res.sendStatus(500);
     }
@@ -121,7 +121,7 @@ router.delete("/:inviteCode", async (req, res) => {
     await deleteInvite(inviteCode);
 
     // Return success
-    res.status(204);
+    res.sendStatus(204);
   }
 });
 

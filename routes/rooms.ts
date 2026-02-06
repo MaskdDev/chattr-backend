@@ -150,7 +150,7 @@ router.patch("/:roomId", async (req, res) => {
     await updateRoom(roomId, body.name, body.description);
 
     // Return success
-    res.status(204);
+    res.sendStatus(204);
   }
 });
 
@@ -186,7 +186,7 @@ router.delete("/:roomId", async (req, res) => {
     await deleteRoom(roomId);
 
     // Return success
-    res.status(204);
+    res.sendStatus(204);
   }
 });
 
@@ -243,7 +243,7 @@ router.delete("/:roomId/members/:memberId", async (req, res) => {
 
     // Check if member was removed
     if (result) {
-      res.status(204);
+      res.sendStatus(204);
     } else {
       res
         .status(404)

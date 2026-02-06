@@ -931,6 +931,8 @@ components:
       properties:
         content:
           type: string
+      required:
+        - content
       example:
         content: "Woah it's a message on Chatrooms!"
 

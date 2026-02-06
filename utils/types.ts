@@ -134,5 +134,5 @@ export type MessageCreate = {
  * A type representing the body of a patch message request.
  */
 export type MessagePatch = {
-  content?: string;
+  content: string;
 };
