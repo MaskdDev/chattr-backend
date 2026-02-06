@@ -45,3 +45,48 @@ export type RoomPatch = {
   name?: string;
   description?: string | null;
 };
+
+/**
+ * A type representing an invite to a room.
+ */
+export type Invite = {
+  code: string;
+  room: Room;
+  creator: UserProfile;
+  uses: number;
+  max_uses: number;
+  expiry: Date;
+};
+
+/**
+ * A type representing the body of a create invite request.
+ */
+export type InviteCreate = {
+  max_uses: number;
+  expiry: Date;
+};
+
+/**
+ * A type representing a message sent in a room.
+ */
+export type Message = {
+  id: string;
+  author: UserProfile;
+  content: string;
+  timestamp: string;
+  editedTimestamp: string | null;
+};
+
+/**
+ * A type representing the body of a create message request.
+ */
+export type MessageCreate = {
+  content: string;
+};
+
+/**
+ * A type representing the body of a patch message request.
+ */
+export type MessagePatch = {
+  content?: string;
+};
