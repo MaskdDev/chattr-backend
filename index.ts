@@ -8,6 +8,7 @@ import apiSpec from "./openapi.yaml";
 import swaggerUi from "swagger-ui-express";
 import userRouter from "./routes/users.ts";
 import roomRouter from "./routes/rooms.ts";
+import inviteRouter from "./routes/invites.ts";
 
 // Create Express application and HTTP server
 const app = express();
@@ -29,6 +30,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
 // Add routers
 app.use("/users", userRouter);
 app.use("/rooms", roomRouter);
+app.use("/invites", inviteRouter);
 
 // Start server
 const port = process.env.PORT || 3000;

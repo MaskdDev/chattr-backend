@@ -37,12 +37,16 @@ export async function getMessages(
   // Create query
   const query = `
     select "message_id" as "id", "content", "timestamp", "edit_timestamp" as "editedTimestamp",
-        jsonb_build_object(
-        'id', "users".id,
-        'username', "users"."username",
-        'displayName', "users"."displayUsername",
-        'avatarUrl', "users"."image"
-        ) filter ( where "users".id is not null ) as "author"
+      case when "users"."id" is not null
+        then
+          jsonb_build_object(
+          'id', "users".id,
+          'username', "users"."username",
+          'displayName', "users"."displayUsername",
+          'avatarUrl', "users"."image"
+          )
+        else null
+      end as "author"
     from "messages"
     left join "users"
         on "users"."id" = "messages"."author_id"
@@ -66,12 +70,16 @@ export async function getMessage(messageId: bigint): Promise<Message | null> {
   // Create query
   const query = `
     select "message_id" as "id", "content", "timestamp", "edit_timestamp" as "editedTimestamp",
-        jsonb_build_object(
-        'id', "users".id,
-        'username', "users"."username",
-        'displayName', "users"."displayUsername",
-        'avatarUrl', "users"."image"
-        ) filter ( where "users".id is not null ) as "author"
+      case when "users"."id" is not null
+        then
+          jsonb_build_object(
+          'id', "users".id,
+          'username', "users"."username",
+          'displayName', "users"."displayUsername",
+          'avatarUrl', "users"."image"
+          )
+        else null
+      end as "author"
     from "messages"
     left join "users"
         on "users"."id" = "messages"."author_id"

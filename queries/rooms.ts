@@ -33,12 +33,16 @@ export async function getRoom(roomId: bigint): Promise<Room | null> {
   const query = `
     select 
       "rooms"."room_id" as "id", "rooms"."name", "rooms"."description",
-      jsonb_build_object(
-      'id', "users".id,
-      'username', "users"."username",
-      'displayName', "users"."displayUsername",
-      'avatarUrl', "users"."image"
-                        ) filter ( where "users".id is not null ) as "creator"
+      case when "users"."id" is not null
+        then
+          jsonb_build_object(
+          'id', "users".id,
+          'username', "users"."username",
+          'displayName', "users"."displayUsername",
+          'avatarUrl', "users"."image"
+                            )
+        else null
+      end as "creator"
     from "rooms"
     left join "users"
         on "users".id = "rooms".creator_id

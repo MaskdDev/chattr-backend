@@ -11,18 +11,26 @@ export async function getInvite(inviteCode: string): Promise<Invite | null> {
   const query = `
     select 
       "invites"."invite_code" as "code", "invites"."uses", "invites".max_uses as "maxUses", "invites"."expires",
-      jsonb_build_object(
-      'id', "rooms".room_id,
-      'creatorId', "rooms"."creator_id",
-      'name', "rooms"."name",
-      'description', "rooms"."description"
-                        ) filter ( where "rooms".room_id is not null ) as "room",
-      jsonb_build_object(
-      'id', "users".id,
-      'username', "users"."username",
-      'displayName', "users"."displayUsername",
-      'avatarUrl', "users"."image"
-                        ) filter ( where "users".id is not null ) as "creator"
+      case when "rooms".room_id is not null
+        then
+          jsonb_build_object(
+          'id', "rooms".room_id,
+          'creatorId', "rooms"."creator_id",
+          'name', "rooms"."name",
+          'description', "rooms"."description"
+                            ) 
+        else null
+        end as "room",
+      case when "users".id is not null
+        then
+          jsonb_build_object(
+          'id', "users".id,
+          'username', "users"."username",
+          'displayName', "users"."displayUsername",
+          'avatarUrl', "users"."image"
+                            ) 
+        else null
+      end as "creator"
     from "room_invites" as "invites"
     left join "users"
         on "users".id = "invites".creator_id
@@ -133,18 +141,26 @@ export async function getRoomInvites(roomId: bigint): Promise<Invite[]> {
   const query = `
     select 
       "invites"."invite_code" as "code", "invites"."uses", "invites"."max_uses" as "maxUses", "invites"."expires",
-      jsonb_build_object(
-      'id', "rooms".room_id,
-      'creatorId', "rooms"."creator_id",
-      'name', "rooms"."name",
-      'description', "rooms"."description"
-                        ) filter ( where "rooms".room_id is not null ) as "room",
-      jsonb_build_object(
-      'id', "users".id,
-      'username', "users"."username",
-      'displayName', "users"."displayUsername",
-      'avatarUrl', "users"."image"
-                        ) filter ( where "users".id is not null ) as "creator"
+      case when "rooms"."room_id" is not null
+        then
+          jsonb_build_object(
+          'id', "rooms".room_id,
+          'creatorId', "rooms"."creator_id",
+          'name', "rooms"."name",
+          'description', "rooms"."description"
+                            )
+        else null
+      end as "room",
+      case when "users"."id" is not null
+        then
+          jsonb_build_object(
+          'id', "users".id,
+          'username', "users"."username",
+          'displayName', "users"."displayUsername",
+          'avatarUrl', "users"."image"
+                            )
+        else null
+      end as "creator"
     from "room_invites" as "invites"
     left join "users"
         on "users".id = "invites".creator_id
