@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUser } from "../utils/database.ts";
+import { getUser } from "../queries/users.ts";
 
 // Create router for route group
 const router = Router();
