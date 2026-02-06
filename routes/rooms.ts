@@ -142,7 +142,7 @@ router.patch("/:roomId", async (req, res) => {
 /**
  * Delete an existing room.
  */
-router.patch("/:roomId", async (req, res) => {
+router.delete("/:roomId", async (req, res) => {
   // Get user from request
   const user = req.authUser;
 
