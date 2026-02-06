@@ -428,12 +428,6 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/InviteCreate"
       responses:
         "204":
           description: Successfully accepted invite.
@@ -445,6 +439,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Invite with given code not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Invite has expired, is used or user is already in room.
           content:
             application/json:
               schema:

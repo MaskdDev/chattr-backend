@@ -55,30 +55,23 @@ export async function isMember(
 
 /**
  * Add a member with a given ID to a room. Returns whether user was added.
- *
- * Returns null if the room doesn't exist.
  */
 export async function addMember(
   memberId: string,
   roomId: bigint,
-): Promise<boolean | null> {
-  // Check if room exists
-  if (await roomExists(roomId)) {
-    // Create query
-    const query = `
+): Promise<boolean> {
+  // Create query
+  const query = `
     insert into "room_members" (member_id, room_id) 
     values ($1, $2)
   `;
-    const values = [memberId, roomId];
+  const values = [memberId, roomId];
 
-    // Run query
-    const results = await database.query(query, values);
+  // Run query
+  const results = await database.query(query, values);
 
-    // Check if user was added
-    return results.rowCount === 1;
-  } else {
-    return null;
-  }
+  // Check if user was added
+  return results.rowCount === 1;
 }
 
 /**
