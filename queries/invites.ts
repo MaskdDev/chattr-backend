@@ -126,9 +126,9 @@ export async function deleteInvite(inviteCode: string): Promise<boolean> {
 /**
  * Get all invites for a room with a given ID.
  *
- * Returns null if room not found.
+ * Assumes room exists.
  */
-export async function getRoomInvites(roomId: bigint): Promise<Invite[] | null> {
+export async function getRoomInvites(roomId: bigint): Promise<Invite[]> {
   // Create query
   const query = `
     select 

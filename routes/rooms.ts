@@ -11,6 +11,7 @@ import {
 import type { RoomCreate, RoomPatch } from "../utils/types.ts";
 import { getMembers, removeMember } from "../queries/members.ts";
 import { roomNotFound } from "../utils/responses.ts";
+import { getRoomInvites } from "../queries/invites.ts";
 
 // Create router for route group
 const router = Router();
@@ -244,6 +245,43 @@ router.delete("/:roomId/members/:memberId", async (req, res) => {
         .status(404)
         .json({ code: 404, message: "Member with given ID not found." });
     }
+  }
+});
+
+/**
+ * Get the current invites for a room.
+ */
+router.get("/:roomId/invites", async (req, res) => {
+  // Get user from request
+  const user = req.authUser;
+
+  // Check if user is authenticated
+  if (user) {
+    // Get room ID
+    const roomId = BigInt(req.params.roomId);
+
+    // Get room
+    const room = await getRoom(roomId);
+
+    // Check if room exists
+    if (!room) {
+      return roomNotFound(res);
+    }
+
+    // Check if user can view room invites
+    if (room.creator?.id !== user.id) {
+      return res.status(403).json({
+        code: 403,
+        message:
+          "User does not have the permission to view the invites for this room.",
+      });
+    }
+
+    // Get invites for room.
+    const invites = await getRoomInvites(roomId);
+
+    // Return invites
+    res.status(200).json({ invites });
   }
 });
 
