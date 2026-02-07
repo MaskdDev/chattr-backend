@@ -1,6 +1,8 @@
 import { WebSocket, WebSocketServer } from "ws";
 import type { IncomingMessage } from "http";
 import type { Stream } from "stream";
+import type { SocketMessage } from "./socketTypes.ts";
+import { stringArrayToBigInt } from "./parsing.ts";
 
 // Websockets state
 const sockets: Map<WebSocket, bigint[]> = new Map();
@@ -80,9 +82,67 @@ function deregisterWebSocket(socket: WebSocket) {
 /**
  * Handle an incoming websocket message.
  */
-function handleWebSocketMessage(data: WebSocket.RawData) {
-  // Get message string
-  const message = data.toString();
+function handleWebSocketMessage(socket: WebSocket, data: WebSocket.RawData) {
+  try {
+    // Parse message JSON
+    const message: SocketMessage = JSON.parse(data.toString());
+
+    // Check message type
+    switch (message.type) {
+      case "ping": {
+        socket.send(JSON.stringify({ type: "pong" }));
+        break;
+      }
+
+      case "subscribe": {
+        // Check if one or multiple room IDs were provided
+        if (message.roomId) {
+          // Get room ID
+          const roomId = BigInt(message.roomId);
+
+          // Subscribe websocket to room
+          addSubscriber(roomId, socket);
+          break;
+        } else if (message.roomIds) {
+          // Get all valid room IDs
+          const roomIds = stringArrayToBigInt(message.roomIds);
+
+          // Subscribe websocket to all specified rooms.
+          roomIds.forEach((roomId) => {
+            addSubscriber(roomId, socket);
+          });
+        }
+        break;
+      }
+
+      case "unsubscribe": {
+        // Check if one or multiple room IDs were provided
+        if (message.roomId) {
+          // Get room ID
+          const roomId = BigInt(message.roomId);
+
+          // Unsubscribe websocket from room
+          removeSubscriber(roomId, socket);
+          break;
+        } else if (message.roomIds) {
+          // Get all valid room IDs
+          const roomIds = stringArrayToBigInt(message.roomIds);
+
+          // Unsubscribe websocket from all specified rooms.
+          roomIds.forEach((roomId) => {
+            removeSubscriber(roomId, socket);
+          });
+        }
+        break;
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Websocket error: ${error.name}: ${error.message}`);
+    } else {
+      console.error(`Websocket error: ${error}`);
+    }
+  }
 }
 
 /**
@@ -102,7 +162,7 @@ export function createWebSocketServer(): WebSocketServer {
     ws.on("close", () => deregisterWebSocket(ws));
 
     // Add websocket message handler
-    ws.on("message", handleWebSocketMessage);
+    ws.on("message", (message) => handleWebSocketMessage(ws, message));
   });
 
   // Return server

@@ -33,17 +33,19 @@ export type PongSocketMessage = {
 };
 
 /**
- * A type representing a client requesting to subscribe to a given room.
+ * A type representing a client requesting to subscribe to one/many given rooms.
  */
 export type roomSubscribeSocketMessage = {
   type: "subscribe";
-  roomId: string;
+  roomId?: string;
+  roomIds?: string[];
 };
 
 /**
- * A type representing a client requesting to unsubscribe from a given room.
+ * A type representing a client requesting to unsubscribe from one/many given room.
  */
 export type roomUnsubscribeSocketMessage = {
   type: "unsubscribe";
-  roomId: string;
+  roomId?: string;
+  roomIds?: string[];
 };
