@@ -20,7 +20,13 @@ const wss = createWebSocketServer();
 const server = createServer(app);
 
 // Use CORS and logging middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3001", "http://chattr.maskd.dev"],
+    credentials: true,
+    optionsSuccessStatus: 200,
+  }),
+);
 app.use(morgan(":method :url :status"));
 
 // Use Better Auth routes

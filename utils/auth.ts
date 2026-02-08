@@ -6,6 +6,7 @@ import generator from "./snowflake.ts";
 
 export const auth = betterAuth({
   database,
+  trustedOrigins: ["http://localhost:3001", "https://chattr.maskd.dev"],
   baseURL: process.env.BETTER_AUTH_URL,
   emailAndPassword: {
     enabled: true,
