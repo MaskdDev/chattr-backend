@@ -63,10 +63,10 @@ router.post("/", async (req, res) => {
     }
 
     // Check for length issues
-    if (body.name.length > 20 || body.name.length < 3) {
+    if (body.name.length > 40 || body.name.length < 3) {
       return res.status(422).json({
         code: 422,
-        message: "Room name must be between 3 and 20 characters.",
+        message: "Room name must be between 3 and 40 characters.",
       });
     }
 
