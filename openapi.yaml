@@ -52,7 +52,7 @@ paths:
                   rooms:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Room"
+                      $ref: "#/components/schemas/PartialRoom"
         "401":
           description: Not Authorised.
           content:

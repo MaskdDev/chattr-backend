@@ -3,6 +3,7 @@ import type { IncomingMessage } from "http";
 import type { Stream } from "stream";
 import type { SocketMessage } from "./socketTypes.ts";
 import { stringArrayToBigInt } from "./parsing.ts";
+import type { Message } from "./types.ts";
 
 // Websockets state
 const sockets: Map<WebSocket, bigint[]> = new Map();
@@ -44,14 +45,22 @@ function removeSubscriber(roomId: bigint, socket: WebSocket) {
 /**
  * Send a websocket string message to all subscribers of a given room.
  */
-export function broadcastToSubscribers(roomId: bigint, message: string) {
+export function broadcastToSubscribers(roomId: bigint, message: Message) {
   // Check if room is in subscriptions map
   if (subscriptions.has(roomId)) {
     // Get subscriber array
     const subscribers = subscriptions.get(roomId) as WebSocket[];
 
     // Broadcast message to all subscribers
-    subscribers.forEach((socket) => socket.send(message));
+    subscribers.forEach((socket) =>
+      socket.send(
+        JSON.stringify({
+          type: "message",
+          roomId: roomId.toString(),
+          body: message,
+        }),
+      ),
+    );
   }
 }
 
