@@ -56,7 +56,6 @@ export function broadcastToSubscribers(roomId: bigint, message: Message) {
       socket.send(
         JSON.stringify({
           type: "message",
-          roomId: roomId.toString(),
           body: message,
         }),
       ),

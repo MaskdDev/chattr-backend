@@ -941,6 +941,8 @@ components:
       properties:
         id:
           type: string
+        roomId:
+          type: string
         author:
           $ref: "#/components/schemas/NullableUser"
         content:

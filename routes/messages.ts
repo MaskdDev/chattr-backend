@@ -118,10 +118,7 @@ router.post("/", async (req: MergedRequest, res) => {
     const message = await createMessage(roomId, user.id, body.content);
 
     // Send message to all subscribers
-    setTimeout(
-      () => broadcastToSubscribers(roomId, "Hello, waw message TODO"),
-      0,
-    );
+    setTimeout(() => broadcastToSubscribers(roomId, message), 0);
 
     // Return message
     res.status(200).json(message);

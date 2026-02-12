@@ -36,7 +36,7 @@ export async function getMessages(
 
   // Create query
   const query = `
-    select "message_id" as "id", "content", "timestamp", "edit_timestamp" as "editedTimestamp",
+    select "message_id" as "id", "room_id", "content", "timestamp", "edit_timestamp" as "editedTimestamp",
       case when "users"."id" is not null
         then
           jsonb_build_object(
@@ -69,7 +69,7 @@ export async function getMessages(
 export async function getMessage(messageId: bigint): Promise<Message | null> {
   // Create query
   const query = `
-    select "message_id" as "id", "content", "timestamp", "edit_timestamp" as "editedTimestamp",
+    select "message_id" as "id", "room_id", "content", "timestamp", "edit_timestamp" as "editedTimestamp",
       case when "users"."id" is not null
         then
           jsonb_build_object(
@@ -135,6 +135,7 @@ export async function createMessage(
     // Return message
     return {
       id: messageRow.message_id,
+      roomId: messageRow.room_id,
       author,
       content: messageRow.content,
       timestamp: messageRow.timestamp,

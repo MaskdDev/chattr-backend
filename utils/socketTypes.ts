@@ -15,7 +15,6 @@ export type SocketMessage =
  */
 export type MessageSocketMessage = {
   type: "message";
-  roomId: string;
   body: Message;
 };
 

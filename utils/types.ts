@@ -105,6 +105,7 @@ export type InviteCreate = {
  */
 export type Message = {
   id: string;
+  roomId: string;
   author: UserProfile | null;
   content: string;
   timestamp: Date;
