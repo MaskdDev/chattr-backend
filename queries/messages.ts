@@ -54,8 +54,6 @@ export async function getMessages(
     order by "message_id" desc
     limit $${nextPlaceholder++}`;
 
-  console.log(query);
-
   // Run query
   const results = await database.query(query, values);
 

@@ -97,6 +97,7 @@ paths:
     get:
       security:
         - cookieAuth: [ ]
+        - internalApiKey: [ ]
       tags:
         - Rooms
       summary: Get information on a specific room.
@@ -214,6 +215,7 @@ paths:
     get:
       security:
         - cookieAuth: [ ]
+        - internalApiKey: [ ]
       tags:
         - Room Members
       summary: Get the members in a specific room.
@@ -740,7 +742,12 @@ components:
       type: apiKey
       in: cookie
       name: betterauth.session_token
-
+    internalApiKey:
+      description: Bearer token using internal API key
+      type: http
+      scheme: Bearer
+      bearerFormat: string
+  
   schemas:
     User:
       type: object

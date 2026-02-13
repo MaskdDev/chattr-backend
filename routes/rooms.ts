@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { requireAuth } from "../utils/middleware.ts";
+import { Router, type Request } from "express";
+import { requireAuth, requireAuthOrKey } from "../utils/middleware.ts";
 import {
   createRoom,
   deleteRoom,
@@ -19,11 +19,57 @@ import { roomNotFound } from "../utils/responses.ts";
 import { createInvite, getRoomInvites } from "../queries/invites.ts";
 import messageRouter from "./messages.ts";
 
+// Define type for a request with the room ID parameter.
+type roomIdReq = Request<{ roomId: string }>;
+
 // Create router for route group
 const router = Router();
 
 // Add sub-routers
 router.use("/:roomId/messages", messageRouter);
+
+/**
+ * Get information on a specific room
+ */
+router.get("/:roomId", requireAuthOrKey, async (req: roomIdReq, res) => {
+  // Get room ID
+  const roomId = BigInt(req.params.roomId);
+
+  // Get room
+  const room = await getRoom(roomId);
+
+  // Check if room exists
+  if (room) {
+    res.status(200).json(room);
+  } else {
+    res
+      .status(404)
+      .json({ code: 404, message: "Room with given ID not found." });
+  }
+});
+
+/**
+ * Get the members of a specific room.
+ */
+router.get(
+  "/:roomId/members",
+  requireAuthOrKey,
+  async (req: roomIdReq, res) => {
+    // Get room ID
+    const roomId = BigInt(req.params.roomId);
+
+    // Check if room exists
+    if (!(await roomExists(roomId))) {
+      return roomNotFound(res);
+    }
+
+    // Get room members
+    const members = await getMembers(roomId);
+
+    // Return room members
+    res.status(200).json({ members });
+  },
+);
 
 // Use auth middleware
 router.use(requireAuth);
@@ -89,29 +135,9 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * Get information on a specific room
- */
-router.get("/:roomId", async (req, res) => {
-  // Get room ID
-  const roomId = BigInt(req.params.roomId);
-
-  // Get room
-  const room = await getRoom(roomId);
-
-  // Check if room exists
-  if (room) {
-    res.status(200).json(room);
-  } else {
-    res
-      .status(404)
-      .json({ code: 404, message: "Room with given ID not found." });
-  }
-});
-
-/**
  * Update an existing room.
  */
-router.patch("/:roomId", async (req, res) => {
+router.patch("/:roomId", async (req: roomIdReq, res) => {
   // Get user from request
   const user = req.authUser;
 
@@ -165,7 +191,7 @@ router.patch("/:roomId", async (req, res) => {
 /**
  * Delete an existing room.
  */
-router.delete("/:roomId", async (req, res) => {
+router.delete("/:roomId", async (req: roomIdReq, res) => {
   // Get user from request
   const user = req.authUser;
 
@@ -196,25 +222,6 @@ router.delete("/:roomId", async (req, res) => {
     // Return success
     res.sendStatus(204);
   }
-});
-
-/**
- * Get the members of a specific room.
- */
-router.get("/:roomId/members", async (req, res) => {
-  // Get room ID
-  const roomId = BigInt(req.params.roomId);
-
-  // Check if room exists
-  if (!(await roomExists(roomId))) {
-    return roomNotFound(res);
-  }
-
-  // Get room members
-  const members = await getMembers(roomId);
-
-  // Return room members
-  res.status(200).json({ members });
 });
 
 /**
