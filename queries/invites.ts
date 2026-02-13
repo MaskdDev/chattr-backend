@@ -14,7 +14,7 @@ export async function getInvite(inviteCode: string): Promise<Invite | null> {
       case when "rooms".room_id is not null
         then
           jsonb_build_object(
-          'id', "rooms".room_id,
+          'id', "rooms".room_id::text,
           'creatorId', "rooms"."creator_id",
           'name', "rooms"."name",
           'description', "rooms"."description"
@@ -144,7 +144,7 @@ export async function getRoomInvites(roomId: bigint): Promise<Invite[]> {
       case when "rooms"."room_id" is not null
         then
           jsonb_build_object(
-          'id', "rooms".room_id,
+          'id', "rooms".room_id::text,
           'creatorId', "rooms"."creator_id",
           'name', "rooms"."name",
           'description', "rooms"."description"
