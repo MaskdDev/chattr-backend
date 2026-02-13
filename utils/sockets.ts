@@ -3,7 +3,7 @@ import type { IncomingMessage } from "http";
 import type { Stream } from "stream";
 import type { SocketMessage } from "./socketTypes.ts";
 import { stringArrayToBigInt } from "./parsing.ts";
-import type { Message, NewMessage } from "./types.ts";
+import type { NewMessage } from "./types.ts";
 
 // Websockets state
 const sockets: Map<WebSocket, Set<bigint>> = new Map();
@@ -22,7 +22,8 @@ function addSubscriber(roomId: bigint, socket: WebSocket) {
     subscriptions.set(roomId, new Set([socket]));
   }
 
-  console.log(`Subscription added for ${roomId}`);
+  // Add room ID to socket set.
+  sockets.get(socket)?.add(roomId);
 }
 
 /**
@@ -32,7 +33,8 @@ function removeSubscriber(roomId: bigint, socket: WebSocket) {
   // If socket exists, remove it from set.
   subscriptions.get(roomId)?.delete(socket);
 
-  console.log(`Subscription removed for ${roomId}`);
+  // Remove room from socket set, if present.
+  sockets.get(socket)?.delete(roomId);
 }
 
 /**
@@ -44,9 +46,6 @@ export function broadcastToSubscribers(roomId: bigint, message: NewMessage) {
 
   // If there are any subscribers, broadcast message
   if (subscribers !== undefined) {
-    console.log(
-      `Broadcasting for ${roomId}. ${subscriptions.size} subscribers found.`,
-    );
     subscribers.forEach((socket) =>
       socket.send(
         JSON.stringify({
@@ -73,7 +72,7 @@ function registerWebSocket(socket: WebSocket) {
  */
 function deregisterWebSocket(socket: WebSocket) {
   // Get socket subscriptions
-  const socketSubscriptions = sockets.get(socket) ?? [];
+  const socketSubscriptions = sockets.get(socket) ?? new Set();
 
   // Remove all subscriptions for socket
   socketSubscriptions.forEach((roomId) => removeSubscriber(roomId, socket));
