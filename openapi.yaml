@@ -928,6 +928,8 @@ components:
       properties:
         content:
           type: string
+        nonce:
+          type: string
       required:
         - content
       example:

@@ -1,4 +1,4 @@
-import type { Message } from "./types.ts";
+import type { NewMessage } from "./types.ts";
 
 /**
  * A type representing a websocket message.
@@ -15,7 +15,7 @@ export type SocketMessage =
  */
 export type MessageSocketMessage = {
   type: "message";
-  body: Message;
+  body: NewMessage;
 };
 
 /**

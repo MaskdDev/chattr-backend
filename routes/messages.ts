@@ -11,7 +11,11 @@ import {
   getMessage,
   getMessages,
 } from "../queries/messages.ts";
-import type { MessageCreate, MessagePatch } from "../utils/types.ts";
+import type {
+  MessageCreate,
+  MessagePatch,
+  NewMessage,
+} from "../utils/types.ts";
 import { broadcastToSubscribers } from "../utils/sockets.ts";
 
 // Create router for route group
@@ -117,8 +121,14 @@ router.post("/", async (req: MergedRequest, res) => {
     // Send message
     const message = await createMessage(roomId, user.id, body.content);
 
+    // Create new message object
+    const newMessage: NewMessage = {
+      nonce: body.nonce,
+      ...message,
+    };
+
     // Send message to all subscribers
-    setTimeout(() => broadcastToSubscribers(roomId, message), 0);
+    setTimeout(() => broadcastToSubscribers(roomId, newMessage), 0);
 
     // Return message
     res.status(200).json(message);

@@ -113,6 +113,19 @@ export type Message = {
 };
 
 /**
+ * A type representing a new message just sent in a room.
+ */
+export type NewMessage = {
+  id: string;
+  nonce?: string;
+  roomId: string;
+  author: UserProfile | null;
+  content: string;
+  timestamp: Date;
+  editedTimestamp: Date | null;
+};
+
+/**
  * A type representing a row in the messages database table, without record keeping fields.
  */
 export type MessageRow = {
@@ -129,6 +142,7 @@ export type MessageRow = {
  */
 export type MessageCreate = {
   content: string;
+  nonce?: string;
 };
 
 /**
