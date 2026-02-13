@@ -105,6 +105,7 @@ export type InviteCreate = {
  */
 export type Message = {
   id: string;
+  nonce?: string;
   roomId: string;
   author: UserProfile | null;
   content: string;
